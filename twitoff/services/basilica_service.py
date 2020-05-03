@@ -15,3 +15,4 @@ if __name__ == "__main__":
 
     tweets = ["this is an example", "heres another fun tweet", "I don't really use twitter"]
     embeddings = connection.embed_sentences(tweets, model="twitter")
+    breakpoint()
