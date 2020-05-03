@@ -6,6 +6,7 @@ from twitoff.models import db, migrate
 from twitoff.routes.home_routes import home_routes
 from twitoff.routes.book_routes import book_routes
 from twitoff.routes.twitter_routes import twitter_routes
+from twitoff.routes.admin_routes import admin_routes
 
 DATABASE_URI = "sqlite:///D:\\School\\unit3\\sprint3\\331-twitoff\\twitoff_development.db"
 SECRET_KEY = "super secret"
@@ -23,6 +24,8 @@ def create_app():
     app.register_blueprint(home_routes)
     app.register_blueprint(book_routes)
     app.register_blueprint(twitter_routes)
+    app.register_blueprint(admin_routes)
+
     return app
 
 if __name__ == "__main__":
