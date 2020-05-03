@@ -6,9 +6,21 @@ from twitoff.models import db
 
 admin_routes = Blueprint("admin_routes", __name__)
 
+
+
+API_KEY = "abc123" # TODO: set as secret env var
+
+# GET /admin/db/reset?api_key=abc123
+
 @admin_routes.route("/admin/db/reset")
 def reset_db():
-    print(type(db))
-    db.drop_all()
-    db.create_all()
-    return f"The database has been reset"
+    print("URL PARMS", dict(request.args))
+
+    if "api_key" in dict(request.args) and request.args["api_key"] == API_KEY:
+        print(type(db))
+        db.drop_all()
+        db.create_all()
+        return f"Database Reset Successful"
+    else:
+        flash("Am I a joke to you???", "danger")
+        return redirect("/")
