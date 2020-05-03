@@ -7,10 +7,11 @@ from twitoff.routes.home_routes import home_routes
 from twitoff.routes.book_routes import book_routes
 
 DATABASE_URI = "sqlite:///D:\\School\\unit3\\sprint3\\331-twitoff\\twitoff_development.db"
+SECRET_KEY = "super secret"
 
 def create_app():
     app = Flask(__name__)
-
+    app.config["SECRET_KEY"] = SECRET_KEY
 
     app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
