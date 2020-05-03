@@ -4,6 +4,7 @@ from flask import Blueprint, jsonify, request, render_template, flash, redirect
 
 from twitoff.models import db, User, Tweet, parse_records
 from twitoff.services.twitter_service import api as twitter_api
+from twitoff.services.basilica_service import connection as basilica_connection
 
 twitter_routes = Blueprint("twitter_routes", __name__)
 
@@ -34,29 +35,29 @@ def fetch_user_data(screen_name):
     # fetch user tweets
     #
 
-    statuses = twitter_api.user_timeline("elonmusk", tweet_mode="extended",count=35, exclude_replies=True, include_rts=False)
+    statuses = twitter_api.user_timeline("elonmusk", tweet_mode="extended",count=100, exclude_replies=True, include_rts=False)
  
+    #
+    # fetch tweet embeddings
+    #
+
+    tweet_texts = [status.full_text for status in statuses]
+    embeddings = list(basilica_connection.embed_sentences(tweet_texts, model="twitter"))
+
     # 
     # TODO: store tweets in db with embedding
     #
 
-    # counter = 0
-    for status in statuses:
-        # print(status.full_text)
-        # print("----")
-        #print(dir(status))
-        # get existing tweet from the db or initialize a new one:
+    for index, status in enumerate(statuses):
+
         db_tweet = Tweet.query.get(status.id) or Tweet(id=status.id)
         db_tweet.user_id = status.author.id # or db_user.id
         db_tweet.full_text = status.full_text
-        #embedding = basilica_client.embed_sentence(status.full_text, model="twitter") # todo: prefer to make a single request to basilica with all the tweet texts, instead of a request per tweet
-        # embedding = embeddings[counter]
-        # print(len(embedding))
-        # db_tweet.embedding = embedding
+
+        embedding = embeddings[index]
+        db_tweet.embedding = embedding
+
         db.session.add(db_tweet)
-        # counter+=1
-
-
     db.session.commit()
 
     return f"Successfully fetched {screen_name}."
